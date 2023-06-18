@@ -6,17 +6,26 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
+import com.chaquo.python.PyObject
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
 import org.pytorch.IValue
 import org.pytorch.LiteModuleLoader
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import org.pytorch.Tensor
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if (! Python.isStarted()) {
+            Python.start(AndroidPlatform(this))
+        }
 
         var img: Bitmap = BitmapFactory.decodeStream(assets.open("image.jpg"))
         val resizedBitmap = Bitmap.createScaledBitmap(img, 256, 256, true)
@@ -35,11 +44,6 @@ class MainActivity : AppCompatActivity() {
         var inputTensor = Tensor.fromBlob(imgData, longArrayOf(1, 3, 256, 256))
         Log.d("output", "tensor loaded")
         Log.d("output", inputTensor.dtype().toString())
-//        try {
-//            val output = module.forward(IValue.from(inputTensor)).toTuple()
-//        }catch (e: Exception){
-//            Log.d("output", e.toString())
-//        }
 
         val outputTensor = module.forward(IValue.from(inputTensor)).toTuple()
         Log.d("output", "output loaded")
@@ -47,7 +51,32 @@ class MainActivity : AppCompatActivity() {
         val out_3d = outputTensor[0].toTensor()
         val out_2d = outputTensor[1].toTensor()
         Log.d("output", out_3d.toString())
+//        convert the tensor to array
+        val out_3d_array = out_3d.dataAsFloatArray
+//        Log.d("output", out_3d_array.toString())
+//        val out_2d_array = out_2d.getDataAsFloatArray()
+//        Log.d("output", out_3d_array.size.toString())
+//        Log.d("output", out_2d_array.toString())
+        Log.d("output", "array loaded")
 
+// add chacopy and python script to the project for the next step
+        val py = Python.getInstance()
+        val obj: PyObject = py.getModule("plot")
+//        convert out_3d tensor to numpy array keeping the shape
+
+        val obj1: PyObject = obj.callAttr("main", out_3d_array, out_2d)
+        Log.d("output", "python script loaded")
+        val str = obj1.toString()
+        Log.d("output", str)
+        val data: ByteArray = Base64.getDecoder().decode(str)
+        val bmp = BitmapFactory.decodeByteArray(data, 0, data.size)
+        val image = findViewById<ImageView>(R.id.imageView)
+        image.setImageBitmap(bmp)
+
+//        val obj1: PyObject = obj.callAttr("main", out_3d, out_2d)
+//        Log.d("output", "python script loaded")
+//        val str = obj1.toString()
+//        Log.d("output", str)
     }
 
     private fun convertBitmapToFloatArray(bitmap: Any): FloatArray {
