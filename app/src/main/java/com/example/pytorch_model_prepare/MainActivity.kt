@@ -52,69 +52,12 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
-//        fun requestPermissions() {
-//            activityResultLauncher.launch(REQUIRED_PERMISSIONS)
-//        }
-//        this is the python part of the code
 
         // working code from here
 
         if (! Python.isStarted()) {
             Python.start(AndroidPlatform(this))
         }
-
-//        var img: Bitmap = BitmapFactory.decodeStream(assets.open("image.jpg"))
-//        val resizedBitmap = Bitmap.createScaledBitmap(img, 256, 256, true)
-//        val normalizedBitmap = resizedBitmap.copy(Bitmap.Config.ARGB_8888, true)
-////        convert the image to a float array
-//        var imgData: FloatArray = convertBitmapToFloatArray(normalizedBitmap)
-////        val imageTensor = preprocessImage(resizedBitmap)
-////        val inputTensor = Tensor.fromBlob(resizedBitmap, longArrayOf(1, resizedBitmap))
-//        Log.d("output", "image loaded")
-////        load the pytorch model
-//            var module = LiteModuleLoader.load(assetFilePath("model.ptl"))
-//        Log.d("output", "model loaded")
-//
-////        convert the image to tensor of shape [1, 3, 256, 256]
-//
-//        var inputTensor = Tensor.fromBlob(imgData, longArrayOf(1, 3, 256, 256))
-//        Log.d("output", "tensor loaded")
-//        Log.d("output", inputTensor.dtype().toString())
-//
-//        val outputTensor = module.forward(IValue.from(inputTensor)).toTuple()
-//        Log.d("output", "output loaded")
-////        val outputTuple = arrayOf(outputTensor)
-//        val out_3d = outputTensor[0].toTensor()
-//        val out_2d = outputTensor[1].toTensor()
-//        Log.d("output", out_3d.toString())
-////        convert the tensor to array
-//        val out_3d_array = out_3d.dataAsFloatArray
-////        Log.d("output", out_3d_array.toString())
-////        val out_2d_array = out_2d.getDataAsFloatArray()
-////        Log.d("output", out_3d_array.size.toString())
-////        Log.d("output", out_2d_array.toString())
-//        Log.d("output", "array loaded")
-//
-//// add chacopy and python script to the project for the next step
-//        val py = Python.getInstance()
-//        val obj: PyObject = py.getModule("plot")
-////        convert out_3d tensor to numpy array keeping the shape
-//
-//        val obj1: PyObject = obj.callAttr("main", out_3d_array, out_2d)
-//        Log.d("output", "python script loaded")
-//        val str = obj1.toString()
-////        Log.d("output", str)
-//        val data: ByteArray = Base64.getDecoder().decode(str)
-//        val bmp = BitmapFactory.decodeByteArray(data, 0, data.size)
-//        val image = findViewById<ImageView>(R.id.imageView)
-//        image.setImageBitmap(bmp)
-
-
-        // ???????????????? above works
-//        val obj1: PyObject = obj.callAttr("main", out_3d, out_2d)
-//        Log.d("output", "python script loaded")
-//        val str = obj1.toString()
-//        Log.d("output", str)
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
@@ -126,8 +69,6 @@ class MainActivity : AppCompatActivity() {
 
     private var imageCapture: ImageCapture? = null
 
-//    private var videoCapture: VideoCapture<Recorder>? = null
-//    private var recording: Recording? = null
 
     private lateinit var cameraExecutor: ExecutorService
     private fun convertBitmapToFloatArray(bitmap: Any): FloatArray {
@@ -202,49 +143,8 @@ class MainActivity : AppCompatActivity() {
             val analyzer = ImageAnalysis.Analyzer { image_input ->
 
                 // load the model
-                var module = LiteModuleLoader.load(assetFilePath("model.ptl"))
+                var module = LiteModuleLoader.load(assetFilePath("model_fixes_quantized.ptl"))
                 Log.d("output", "model loaded")
-//                 convert image to bitmap
-//                try {
-////                    print the size of the image
-//                    Log.d("output", image_input.width.toString())
-//                    Log.d("output", image_input.height.toString())
-//                    val planes = image_input.planes
-//                    Log.d("output", planes.size.toString())
-////                    double the capacity of the buffer
-//                    val buffer = planes[0].buffer
-//
-////                    log the size of the buffer
-//                    Log.d("output", buffer.capacity().toString())
-////                    make the buffer large enough for the input image
-//
-//                    val pixelStride = planes[0].pixelStride
-//                    val rowStride = planes[0].rowStride
-//                    val width = image_input.width
-//                    val height = image_input.height
-//
-//                    val bitmap = Bitmap.createBitmap(
-//                        width + (pixelStride - 1) * (width / pixelStride),
-//                        height,
-//                        Bitmap.Config.ALPHA_8
-//                    )
-//                    buffer.rewind()
-//                    bitmap.copyPixelsFromBuffer(buffer)
-//                    //center crop the image to 400x400
-//                    val croppedBitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888)
-//
-//                    val xOffset = (bitmap.width - 400) / 2
-//                    val yOffset = (bitmap.height - 400) / 2
-//
-//                    val canvas = Canvas(croppedBitmap)
-//                    canvas.drawBitmap(bitmap, Rect(xOffset, yOffset, xOffset + 400, yOffset + 400), Rect(0, 0, 400, 400), null)
-////                 resize the image to 256x256
-//                    val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, 256, 256, true)
-//                    val normalizedBitmap = resizedBitmap.copy(Bitmap.Config.ARGB_8888, true)
-//                }
-//                catch (e: Exception){
-//                    Log.d("output", e.toString())
-//                }
                 val planes = image_input.planes
                 val buffer = planes[0].buffer
                 val bytes = ByteArray(buffer.capacity())
@@ -262,9 +162,7 @@ class MainActivity : AppCompatActivity() {
 //                            Bitmap.Config.ALPHA_8
 
                 )
-//                get bitmap from preview view
 
-//                var bitmap2 = previewView.getbitmap()
 
                 buffer.rewind()
 //                bitmap.copyPixelsFromBuffer(buffer)
@@ -288,12 +186,6 @@ class MainActivity : AppCompatActivity() {
 //        convert the image to a float array
                 var imgData: FloatArray = convertBitmapToFloatArray(normalizedBitmap)
 
-// testing som ecode here #########################################################################
-//                var img: Bitmap = BitmapFactory.decodeStream(assets.open("image.jpg"))
-//                val resizedBitmap = Bitmap.createScaledBitmap(img, 256, 256, true)
-//                val normalizedBitmap = resizedBitmap.copy(Bitmap.Config.ARGB_8888, true)
-////        convert the image to a float array
-//                var imgData: FloatArray = convertBitmapToFloatArray(normalizedBitmap)
         Log.d("output", "image loaded")
 //        convert the image to tensor of shape [1, 3, 256, 256]
 
@@ -302,15 +194,6 @@ class MainActivity : AppCompatActivity() {
                 // run the model
 //                var outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
                 val outputTensor = module.forward(IValue.from(inputTensor)).toTuple()
-
-//                val outputTuple = arrayOf(outputTensor)
-//                try {
-//                    val out_3d = outputTensor[0].toTensor()
-//                    val out_2d = outputTensor[1].toTensor()
-//                    Log.d("output", "works")
-//                }catch (e: Exception){
-//                    Log.d("output", e.toString())
-//                }
                 val out_3d = outputTensor[0].toTensor()
                 val out_2d = outputTensor[1].toTensor()
                 Log.d("output", out_3d.toString())
@@ -342,14 +225,6 @@ class MainActivity : AppCompatActivity() {
                 val bmp = BitmapFactory.decodeByteArray(data, 0, data.size)
                 val image_to_view = findViewById<ImageView>(R.id.imageView)
 
-//                try {
-//                    image_to_view.setImageBitmap(bmp)
-//                    image_input.close()
-//                    Log.d("output", "no problem here")
-//                }
-//                catch (e: Exception){
-//                    Log.d("output", e.toString())
-//                }
                 image_to_view.setImageBitmap(bmp)
 //                image_input.close()
             }
