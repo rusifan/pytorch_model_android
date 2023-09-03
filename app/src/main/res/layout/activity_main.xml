@@ -6,35 +6,36 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!--        android:adjustViewBounds="true"-->
-    <!--        android:cropToPadding="true"-->
-    <!--        android:scaleX="0.5"-->
-    <!--        android:scaleY="0.5"-->
-    <!--        tools:layout_editor_absoluteX="-45dp"-->
-    <!--        tools:layout_editor_absoluteY="-50dp" -->
-    <!--        />-->
 
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
-        android:layout_width="405dp"
-        android:layout_height="327dp"
-        tools:layout_editor_absoluteX="6dp"
-        tools:layout_editor_absoluteY="0dp" />
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <ImageView
-        android:layout_width="411dp"
-        android:layout_height="329dp"
         android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="334dp" />
+        app:layout_constraintTop_toBottomOf="@id/viewFinder" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/vertical_centerline"
+        android:id="@+id/vertical_center_line"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent=".50" />
+        app:layout_constraintGuide_percent=".5" />
+
+    <TextView
+        android:id="@+id/fps_text_view"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
+        android:text=""
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
